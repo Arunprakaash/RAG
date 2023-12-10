@@ -40,7 +40,7 @@ async def main(message: cl.Message):
         Tool(
             name="BNS-tool",
             func=bns_query,
-            description="""Empower the LangChain agent with the BNS-tool to handle user queries
+            description="""Empower the lamarr agent with the BNS-tool to handle user queries
             related to the official new clauses of the Republic of India.
             Utilize the BHARATIYA NYAYA SANHITA (BNS) system for accurate and up-to-date
             information on Clauses and relevant information. Ensure seamless integration
@@ -49,7 +49,7 @@ async def main(message: cl.Message):
         Tool(
             name="IPC-tool",
             func=ipc_query,
-            description="""Equip the LangChain agent with the IPC-tool to address user queries
+            description="""Equip the lamarr agent with the IPC-tool to address user queries
             related to the official old Section codes of the Republic of India.
             Leverage the Indian Penal Code (IPC) system for historical Section codes and relevant information.
             Integrate smoothly with the IPC Act Query Engine to retrieve precise and comprehensive

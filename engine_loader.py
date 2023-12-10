@@ -1,23 +1,49 @@
 from llama_index import StorageContext, load_index_from_storage
-import openai
 import os
 from llama_index import (
-  VectorStoreIndex,
   StorageContext,
   load_index_from_storage
   )
-from pathlib import Path
 
 from llama_index.tools import QueryEngineTool, ToolMetadata
 from llama_index.query_engine import SubQuestionQueryEngine
 from llama_index.llms import AzureOpenAI
+from llama_index.embeddings import AzureOpenAIEmbedding
+from llama_index import ServiceContext
+from llama_index import set_global_service_context
+
+
+llm = AzureOpenAI(
+    model="gpt-35-turbo",
+    deployment_name="gpt-3",
+    api_key=os.environ["OPENAI_API_KEY"],
+    azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
+    api_version=os.environ['OPENAI_API_VERSION'],
+)
+embed_model = AzureOpenAIEmbedding(
+    model="text-embedding-ada-002",
+    deployment_name=os.environ['EMBEDDING_DEPLOYMENT_NAME'],
+    api_key=os.environ['OPENAI_API_KEY'],
+    azure_endpoint=os.environ['AZURE_OPENAI_ENDPOINT'],
+    api_version=os.environ['OPENAI_API_VERSION'],
+)
+
+
+
 
 def __get_index(persist_dir: str):
     storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
     index = load_index_from_storage(storage_context)
     return index
 
-def get_query_engines():
+def get_query_engines(): 
+    service_context = ServiceContext.from_defaults(
+        llm=llm,
+        embed_model=embed_model,
+    )
+
+    set_global_service_context(service_context)
+
     ipc_act_index = __get_index("./vector_store/ipc")
     nyay_index = __get_index("./vector_store/bns")
 
@@ -42,7 +68,7 @@ def get_query_engines():
         ),
     )
 
-    ipc_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=[ipc_act_query_engine])
-    bns_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=[bns_query_engine])
+    ipc_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=[ipc_act_query_engine],service_context=service_context)
+    bns_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=[bns_query_engine],service_context=service_context)
 
     return ipc_engine, bns_engine
