@@ -28,9 +28,6 @@ embed_model = AzureOpenAIEmbedding(
     api_version=os.environ['OPENAI_API_VERSION'],
 )
 
-
-
-
 def __get_index(persist_dir: str):
     storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
     index = load_index_from_storage(storage_context)
