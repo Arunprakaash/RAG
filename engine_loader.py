@@ -5,8 +5,6 @@ from llama_index import (
   load_index_from_storage
   )
 
-from llama_index.tools import QueryEngineTool, ToolMetadata
-from llama_index.query_engine import SubQuestionQueryEngine
 from llama_index.llms import AzureOpenAI
 from llama_index.embeddings import AzureOpenAIEmbedding
 from llama_index import ServiceContext
@@ -44,26 +42,26 @@ def get_query_engines():
     ipc_act_index = __get_index("./vector_store/ipc")
     nyay_index = __get_index("./vector_store/bns")
 
-    ipc_act_engine = ipc_act_index.as_query_engine(similarity_top_k=2)
-    nyay_engine = nyay_index.as_query_engine(similarity_top_k=2)
+    ipc_act_engine = ipc_act_index.as_chat_engine(verbose=True)
+    nyay_engine = nyay_index.as_chat_engine(verbose=True)
 
-    query_engine_tool = [
-        QueryEngineTool(
-            query_engine=ipc_act_engine,
-            metadata=ToolMetadata(
-                name="Indian Penal Code (IPC) Act Query Engine",
-                description="Provides Information about Indian Penal Code(IPC) system.",
-            ),
-        ),
-        QueryEngineTool(
-            query_engine=nyay_engine,
-            metadata=ToolMetadata(
-                name="Bharatiya Nyaya Sanhita (BNS) Query Engine",
-                description="Provides Information about BHARATIYA NYAYA SANHITA system.",
-            ),
-        )
-    ]
+    # query_engine_tool = [
+    #     QueryEngineTool(
+    #         query_engine=ipc_act_engine,
+    #         metadata=ToolMetadata(
+    #             name="Indian Penal Code (IPC) Act Query Engine",
+    #             description="Provides Information about Indian Penal Code(IPC) system.",
+    #         ),
+    #     ),
+    #     QueryEngineTool(
+    #         query_engine=nyay_engine,
+    #         metadata=ToolMetadata(
+    #             name="Bharatiya Nyaya Sanhita (BNS) Query Engine",
+    #             description="Provides Information about BHARATIYA NYAYA SANHITA system.",
+    #         ),
+    #     )
+    # ]
 
-    query_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tool,service_context=service_context)
+    # query_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tool,service_context=service_context)
 
-    return query_engine
+    return ipc_act_engine, nyay_engine
