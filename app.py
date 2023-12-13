@@ -15,36 +15,36 @@ llm = AzureChatOpenAI(
 )
 
 try:
-    ipc_engine, bns_engine = get_query_engines()
+    query_engine = get_query_engines()
 except:
    print("no vectors")
 
-def ipc_query(query:str)-> str:
-        ipc_engine = cl.user_session.get("ipc_query_engine")
-        response = str(ipc_engine.query(query))
+def query_engine_func(query:str)-> str:
+        query_engine = cl.user_session.get("query_engine")
+        response = str(query_engine.query(query))
         return response
 
-def bns_query(query:str)-> str:
-    bns_engine = cl.user_session.get("bns_query_engine")
-    response = str(bns_engine.query(query))
-    return response
+# def bns_query(query:str)-> str:
+#     bns_engine = cl.user_session.get("bns_query_engine")
+#     response = str(bns_engine.query(query))
+#     return response
 
 @cl.on_chat_start
 async def factory():
-    cl.user_session.set("ipc_query_engine", ipc_engine)
-    cl.user_session.set("bns_query_engine",bns_engine)
+    cl.user_session.set("query_engine", query_engine)
+    # cl.user_session.set("bns_query_engine",bns_engine)
 
     tools = [
         Tool(
-            name="BNS-tool",
-            func=bns_query,
-            description="Useful for when you need find information about Bhartiya Nyaya Sanhita Clauses(BNS) (Bill Replacing IPC) .",
+            name="llama-index",
+            func=query_engine_func,
+            description="Useful for when you need find information about Indian Penal Code Section (IPC) and Bhartiya Nyaya Sanhita Clauses(BNS) (Bill Replacing IPC) .",
         ),
-        Tool(
-            name="IPC-tool",
-            func=ipc_query,
-            description="Useful for when you need find information about Indian Penal Section Codes(IPC).",
-        )
+        # Tool(
+        #     name="IPC-tool",
+        #     func=ipc_query,
+        #     description="Useful for when you need find information about Indian Penal Section Codes(IPC).",
+        # )
     ]
 
     memory = ConversationBufferMemory(memory_key="memory", return_messages=True)
